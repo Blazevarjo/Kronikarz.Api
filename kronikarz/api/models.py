@@ -4,14 +4,42 @@ from django.utils.translation import gettext as _
 from django.db import models
 
 
-class User(AbstractUser):
-    pass
+class Event(models.Model):
+    class Icons(models.TextChoices):
+        OTHER = 'OTHER', _("Other")
+        # Develop more icons
+
+    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=2000, null=True)
+    date = models.DateField(null=True)
+    icon = models.CharField(
+        max_length=20, choices=Icons.choices, default=Icons.OTHER)
 
 
 class FamilyTree(models.Model):
     user = models.ForeignKey('api.User', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=10000, null=True)
+
+
+class Mariage(models.Model):
+    person_1 = models.ForeignKey(
+        'api.Person', related_name='person_1', on_delete=models.CASCADE)
+    person_2 = models.ForeignKey(
+        'api.Person', related_name='person_2', on_delete=models.CASCADE)
+    mariage_date = models.DateField(null=True)
+    divorce_date = models.DateField(null=True)
+
+
+def user_directory_path(instance, filename):
+    return f'user_{instance.user.id}/filename'
+
+
+class Media(models.Model):
+    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    file = models.FileField(upload_to=user_directory_path)
 
 
 class Person(models.Model):
@@ -36,33 +64,5 @@ class Person(models.Model):
     death_cause = models.CharField(max_length=200, null=True)
 
 
-class Event(models.Model):
-    class Icons(models.TextChoices):
-        OTHER = 'OTHER', _("Other")
-        # Develop more icons
-
-    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
-    description = models.CharField(max_length=2000, null=True)
-    date = models.DateField(null=True)
-    icon = models.CharField(
-        max_length=20, choices=Icons.choices, default=Icons.OTHER)
-
-
-class Mariage(models.Model):
-    person_1 = models.ForeignKey(
-        'api.Person', related_name='person_1', on_delete=models.CASCADE)
-    person_2 = models.ForeignKey(
-        'api.Person', related_name='person_2', on_delete=models.CASCADE)
-    marriage_date = models.DateField(null=True)
-    divorce_date = models.DateField(null=True)
-
-
-def user_directory_path(instance, filename):
-    return f'user_{instance.user.id}/filename'
-
-
-class Media(models.Model):
-    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
-    file = models.FileField(upload_to=user_directory_path)
+class User(AbstractUser):
+    pass

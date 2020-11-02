@@ -15,7 +15,28 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework import routers
+
+from .api.views import (
+    EventViewSet,
+    FamilyTreeViewSet,
+    MariageViewSet,
+    MediaViewSet,
+    PersonViewSet
+)
+
+
+router = routers.DefaultRouter()
+
+router.register(r'events', EventViewSet)
+router.register(r'family-trees', FamilyTreeViewSet)
+router.register(r'mariages', MariageViewSet)
+router.register(r'medias', MediaViewSet)
+router.register(r'persons', PersonViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += router.urls

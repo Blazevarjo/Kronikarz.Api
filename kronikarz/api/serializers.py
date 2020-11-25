@@ -8,26 +8,14 @@ from .models import (
 )
 
 
-class EventSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Event
-        fields = [
-            'url',
-            'person',
-            'title',
-            'description',
-            'date',
-            'icon'
-        ]
-
-
-class FamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
+class BasicFamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = FamilyTree
         fields = [
             'url',
+            'user',
             'name',
-            'description'
+            'description',
         ]
 
 
@@ -43,6 +31,47 @@ class MariageSerializer(serializers.HyperlinkedModelSerializer):
         ]
 
 
+class BasicPersonSerializer(serializers.HyperlinkedModelSerializer):
+    mariages = MariageSerializer(many=True)
+
+    class Meta:
+        model = Person
+        fields = [
+            'url',
+            'name',
+            'surname',
+            'sex',
+            'mariages'
+        ]
+
+
+class EventSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Event
+        fields = [
+            'url',
+            'person',
+            'title',
+            'description',
+            'date',
+            'icon'
+        ]
+
+
+class FamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
+    persons = BasicPersonSerializer(many=True)
+
+    class Meta:
+        model = FamilyTree
+        fields = [
+            'url',
+            'user',
+            'name',
+            'description',
+            'persons',
+        ]
+
+
 class MediaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Media
@@ -55,6 +84,10 @@ class MediaSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class PersonSerializer(serializers.HyperlinkedModelSerializer):
+    medias = MediaSerializer(many=True)
+    events = EventSerializer(many=True)
+    mariages = MariageSerializer(many=True)
+
     class Meta:
         model = Person
         fields = [
@@ -69,5 +102,18 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
             'sex',
             'birth_place',
             'death_date',
-            'death_cause'
+            'death_cause',
+            'medias',
+            'events',
+            'mariages'
         ]
+
+    def create(self, validated_data):
+        medias_data = validated_data.pop('medias')
+        events_data = validated_data.pop('events')
+        person = Person.objects.create(**validated_data)
+        for media_data in medias_data:
+            Media.objects.create(person=person, **media_data)
+        for event_data in events_data:
+            Event.objects.create(person=person, **event_data)
+        return person

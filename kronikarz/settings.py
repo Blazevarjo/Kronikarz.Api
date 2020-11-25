@@ -74,6 +74,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kronikarz.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ]
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

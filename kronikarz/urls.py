@@ -28,11 +28,11 @@ from .api.views import (
 
 router = routers.DefaultRouter()
 
-router.register(r'events', EventViewSet)
-router.register(r'family-trees', FamilyTreeViewSet)
-router.register(r'mariages', MariageViewSet)
-router.register(r'medias', MediaViewSet)
-router.register(r'persons', PersonViewSet)
+router.register(r'events', EventViewSet, 'event')
+router.register(r'family-trees', FamilyTreeViewSet, 'family-tree')
+router.register(r'mariages', MariageViewSet, 'mariage')
+router.register(r'medias', MediaViewSet, 'media')
+router.register(r'persons', PersonViewSet, 'person')
 
 
 urlpatterns = [

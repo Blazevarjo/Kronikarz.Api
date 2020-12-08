@@ -13,7 +13,6 @@ class BasicFamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
         model = FamilyTree
         fields = [
             'url',
-            'user',
             'name',
             'description',
         ]

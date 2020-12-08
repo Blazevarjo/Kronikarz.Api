@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from .models import (
     Event,
@@ -17,12 +18,16 @@ from .serializers import (
 )
 
 from .permissions import (
-    IsOwner
+    IsEventOwner,
+    IsFamilyTreeOwner,
+    IsMariageOwner, IsMediaOwner,
+    IsPersonOwner
 )
 
 
 class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
+    permission_classes = [IsAuthenticated, IsEventOwner]
 
     def get_queryset(self):
         current_user = self.request.user
@@ -30,7 +35,7 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class FamilyTreeViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsOwner]
+    permission_classes = [IsAuthenticated, IsFamilyTreeOwner]
 
     def get_queryset(self):
         current_user = self.request.user
@@ -44,8 +49,8 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
 
 
 class MariageViewSet(viewsets.ModelViewSet):
-    queryset = Mariage.objects.all()
     serializer_class = MariageSerializer
+    permission_classes = [IsAuthenticated, IsMariageOwner]
 
     def get_queryset(self):
         current_user = self.request.user
@@ -53,8 +58,8 @@ class MariageViewSet(viewsets.ModelViewSet):
 
 
 class MediaViewSet(viewsets.ModelViewSet):
-    queryset = Media.objects.all()
     serializer_class = MediaSerializer
+    permission_classes = [IsAuthenticated, IsMediaOwner]
 
     def get_queryset(self):
         current_user = self.request.user
@@ -62,8 +67,8 @@ class MediaViewSet(viewsets.ModelViewSet):
 
 
 class PersonViewSet(viewsets.ModelViewSet):
-    queryset = Person.objects.all()
     serializer_class = PersonSerializer
+    permission_classes = [IsAuthenticated, IsPersonOwner]
 
     def get_queryset(self):
         current_user = self.request.user

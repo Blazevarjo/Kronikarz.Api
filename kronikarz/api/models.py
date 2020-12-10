@@ -33,7 +33,7 @@ class Mariage(models.Model):
 
 
 def user_directory_path(instance, filename):
-    return f'user_{instance.user.id}/filename'
+    return f'media/user_{instance.person.id}/{filename}'
 
 
 class Media(models.Model):

@@ -29,7 +29,7 @@ from .api.views import (
 router = routers.DefaultRouter()
 
 router.register(r'events', EventViewSet, 'event')
-router.register(r'family-trees', FamilyTreeViewSet, 'family-tree')
+router.register(r'family-trees', FamilyTreeViewSet, 'familytree')
 router.register(r'mariages', MariageViewSet, 'mariage')
 router.register(r'medias', MediaViewSet, 'media')
 router.register(r'persons', PersonViewSet, 'person')

@@ -48,7 +48,8 @@ class Person(models.Model):
         FEMALE = 'F', _('Female')
         OTHER = 'O', _('Other')
 
-    family_tree = models.ForeignKey('api.FamilyTree', on_delete=models.CASCADE)
+    family_tree = models.ForeignKey(
+        'api.FamilyTree', related_name='persons', on_delete=models.CASCADE)
     father = models.ForeignKey(
         'api.Person',  null=True, on_delete=models.SET_NULL, related_name='person_father')
     mother = models.ForeignKey(

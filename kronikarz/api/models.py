@@ -9,7 +9,8 @@ class Event(models.Model):
         OTHER = 'OTHER', _("Other")
         # Develop more icons
 
-    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
+    person = models.ForeignKey(
+        'api.Person', related_name='events', on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=2000, null=True)
     date = models.DateField(null=True)
@@ -25,7 +26,7 @@ class FamilyTree(models.Model):
 
 class Mariage(models.Model):
     person_1 = models.ForeignKey(
-        'api.Person', related_name='person_1', on_delete=models.CASCADE)
+        'api.Person', related_name='mariages', on_delete=models.CASCADE)
     person_2 = models.ForeignKey(
         'api.Person', related_name='person_2', on_delete=models.CASCADE)
     mariage_date = models.DateField(null=True)
@@ -33,11 +34,12 @@ class Mariage(models.Model):
 
 
 def user_directory_path(instance, filename):
-    return f'media/user_{instance.person.id}/{filename}'
+    return f'media/user_{instance.person.family_tree.user.id}/{filename}'
 
 
 class Media(models.Model):
-    person = models.ForeignKey('api.Person', on_delete=models.CASCADE)
+    person = models.ForeignKey(
+        'api.Person', related_name='medias', on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     file = models.FileField(upload_to=user_directory_path)
 

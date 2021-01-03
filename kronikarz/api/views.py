@@ -1,5 +1,8 @@
+from drf_yasg.utils import swagger_auto_schema
+
 from django.views.decorators import csrf
 from django.utils.decorators import method_decorator
+
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -45,6 +48,9 @@ class EventViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsEventOwner]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Event.objects.none()
+
         current_user = self.request.user
         return Event.objects.filter(person__family_tree__user=current_user)
 
@@ -53,6 +59,9 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsFamilyTreeOwner]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return FamilyTree.objects.none()
+
         current_user = self.request.user
         return FamilyTree.objects.filter(user=current_user)
 
@@ -71,6 +80,9 @@ class MariageViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsMariageOwner]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Mariage.objects.none()
+
         current_user = self.request.user
         return Mariage.objects.filter(person_1__family_tree__user=current_user)
 
@@ -80,6 +92,9 @@ class MediaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsMediaOwner]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Media.objects.none()
+
         current_user = self.request.user
         return Media.objects.filter(person__family_tree__user=current_user)
 
@@ -89,6 +104,9 @@ class PersonViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsPersonOwner]
 
     def get_queryset(self):
+        if getattr(self, 'swagger_fake_view', False):
+            return Person.objects.none()
+
         current_user = self.request.user
         return Person.objects.filter(family_tree__user=current_user)
 
@@ -97,8 +115,7 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 @method_decorator(csrf.csrf_protect, name='dispatch')
 class LoginView(views.APIView):
-    permission_classes = []
-    authentication_classes = []
+    permission_classes = [AllowAny]
 
     def post(self, request, format=None):
         username = request.data['username']
@@ -122,10 +139,12 @@ class LoginView(views.APIView):
 
 @method_decorator(csrf.requires_csrf_token, name='dispatch')
 class RegisterView(views.APIView):
-    queryset = User.objects.all()
     permission_classes = [AllowAny]
-    serializer_class = UserSerializer
 
+    @swagger_auto_schema(operation_description="Register new User",
+                         responses={201: 'Successfully registered user',
+                                    400: 'Something went wrong with registration'},
+                         request_body=UserSerializer)
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -144,6 +163,7 @@ class RegisterView(views.APIView):
 class CSRFTokenView(views.APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(operation_description='Endpoint to return CSRF token in cookie')
     def get(self, request, format=None):
         return Response({'detail': 'Success, SCRF cookie set'},
                         status=status.HTTP_200_OK)

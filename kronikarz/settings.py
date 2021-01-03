@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'drf_yasg',
     'kronikarz.api.apps.ApiConfig'
 ]
 
@@ -80,7 +81,26 @@ REST_FRAMEWORK = {
     ],
 }
 
-
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'SessionAuthentication': {
+            'type': 'apiKey',
+            'description': 'Require sessionId in cookie. To get sessionId, you need to first login or register.',
+            'in': 'cookie',
+            'name': 'sessionId'
+        },
+        'CSRFToken': {
+            'type': 'apiKey',
+            'description': 'Require CSRF token to use unsafe methods. To get token, use csrf-cookie endpoint.',
+            'in': 'header',
+            'name': 'X-CSRFToken'
+        }
+    },
+    'SECURITY': {
+        'SessionAuthentication',
+        'CSRFToken'
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 

@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from rest_framework import routers
+from django.urls.conf import re_path
+from rest_framework import (
+    routers,
+    permissions
+)
 
 from .api.views import (
     CSRFTokenView,
@@ -26,6 +30,20 @@ from .api.views import (
     MediaViewSet,
     PersonViewSet,
     RegisterView
+)
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Kronikarz API",
+        default_version='v1',
+        contact=openapi.Contact(url="https://github.com/KronikarzIO"),
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
 )
 
 
@@ -40,9 +58,16 @@ router.register(r'persons', PersonViewSet, 'person')
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),
-    path(r'register/', RegisterView.as_view()),
-    path(r'login/', LoginView.as_view()),
-    path(r'csrf-cookie/', CSRFTokenView.as_view())
+    path(r'auth/register/', RegisterView.as_view()),
+    path(r'auth/login/', LoginView.as_view()),
+    path(r'auth/csrf-cookie/', CSRFTokenView.as_view()),
+
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$',
+            schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path(r'swagger/', schema_view.with_ui('swagger',
+                                          cache_timeout=0), name='schema-swagger-ui'),
+    path(r'redoc/', schema_view.with_ui('redoc',
+                                        cache_timeout=0), name='schema-redoc'),
 ]
 
 urlpatterns += router.urls

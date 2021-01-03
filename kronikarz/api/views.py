@@ -1,4 +1,7 @@
-from drf_yasg.utils import swagger_auto_schema
+from drf_yasg.utils import (
+    swagger_auto_schema,
+    swagger_serializer_method
+)
 
 from django.views.decorators import csrf
 from django.utils.decorators import method_decorator
@@ -56,6 +59,10 @@ class EventViewSet(viewsets.ModelViewSet):
         return Event.objects.filter(person__family_tree__user=current_user)
 
 
+@method_decorator(swagger_serializer_method(FamilyTreeSerializer),
+                  name='retrieve')
+@method_decorator(swagger_serializer_method(BasicFamilyTreeSerializer),
+                  name='list')
 class FamilyTreeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsFamilyTreeOwner]
 

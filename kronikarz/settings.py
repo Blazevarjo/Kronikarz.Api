@@ -96,11 +96,14 @@ SWAGGER_SETTINGS = {
             'name': 'X-CSRFToken'
         }
     },
-    'SECURITY': {
-        'SessionAuthentication',
-        'CSRFToken'
-    }
+    'SECURITY': [
+        {
+            'SessionAuthentication',
+            'CSRFToken'
+        }
+    ]
 }
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 

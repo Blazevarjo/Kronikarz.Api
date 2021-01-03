@@ -38,7 +38,8 @@ from .permissions import (
 from django.contrib.auth import (
     authenticate,
     get_user_model,
-    login
+    login,
+    logout
 )
 User = get_user_model()
 
@@ -117,6 +118,10 @@ class PersonViewSet(viewsets.ModelViewSet):
 class LoginView(views.APIView):
     permission_classes = [AllowAny]
 
+    @swagger_auto_schema(operation_description="User log in",
+                         responses={200: 'Successfully log in user',
+                                    400: 'Something went wrong with log in'},
+                         request_body=UserSerializer)
     def post(self, request, format=None):
         username = request.data['username']
         password = request.data['password']
@@ -126,8 +131,6 @@ class LoginView(views.APIView):
 
         user = authenticate(username=username, password=password)
 
-        print('authenticate: ' + str(user))
-
         if user is not None:
             login(request, user)
             return Response(
@@ -135,6 +138,18 @@ class LoginView(views.APIView):
                 status=status.HTTP_200_OK)
         else:
             raise ValidationError('Invalid credentials')
+
+
+@method_decorator(csrf.requires_csrf_token, name='dispatch')
+class LogoutView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(operation_description="Log out current user",
+                         responses={200: 'Successfully log out user'})
+    def post(self, request, format=None):
+        logout(request)
+        return Response({'detail': 'Successfully log out'},
+                        status=status.HTTP_200_OK)
 
 
 @method_decorator(csrf.requires_csrf_token, name='dispatch')

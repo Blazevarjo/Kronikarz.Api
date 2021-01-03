@@ -18,11 +18,14 @@ from django.urls import path
 from rest_framework import routers
 
 from .api.views import (
+    CSRFTokenView,
     EventViewSet,
     FamilyTreeViewSet,
+    LoginView,
     MariageViewSet,
     MediaViewSet,
-    PersonViewSet
+    PersonViewSet,
+    RegisterView
 )
 
 
@@ -36,7 +39,10 @@ router.register(r'persons', PersonViewSet, 'person')
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path(r'admin/', admin.site.urls),
+    path(r'register/', RegisterView.as_view()),
+    path(r'login/', LoginView.as_view()),
+    path(r'csrf-cookie/', CSRFTokenView.as_view())
 ]
 
 urlpatterns += router.urls

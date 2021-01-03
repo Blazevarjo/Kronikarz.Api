@@ -7,6 +7,10 @@ from .models import (
     Person,
 )
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 
 class BasicFamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -115,3 +119,22 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
         for event_data in events_data:
             Event.objects.create(person=person, **event_data)
         return person
+
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField()
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'password'
+        ]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            password=validated_data['password']
+        )
+
+        return user

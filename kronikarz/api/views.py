@@ -62,6 +62,9 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
         else:
             return FamilyTreeSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class MariageViewSet(viewsets.ModelViewSet):
     serializer_class = MariageSerializer
@@ -129,7 +132,8 @@ class RegisterView(views.APIView):
             user = serializer.save()
             login(request, user)
             return Response(
-                {'detail': f'Successfully registeres new user: {user.username}'},
+                {'username':  user.username,
+                 'detail': 'Successfully registered user:'},
                 status=status.HTTP_201_CREATED)
 
 

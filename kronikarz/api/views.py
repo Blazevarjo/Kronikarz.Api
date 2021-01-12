@@ -144,7 +144,9 @@ class LoginView(views.APIView):
                 {'detail': 'Success'},
                 status=status.HTTP_200_OK)
         else:
-            raise ValidationError('Invalid credentials')
+            return Response(
+                {'detail': 'Invalid credentials'},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 @method_decorator(csrf.requires_csrf_token, name='dispatch')

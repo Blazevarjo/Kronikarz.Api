@@ -12,47 +12,56 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class BasicFamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
+class BasicFamilyTreeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FamilyTree
         fields = [
-            'url',
+            'id',
             'name',
             'description',
         ]
 
 
-class MariageSerializer(serializers.HyperlinkedModelSerializer):
+class MariageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mariage
         fields = [
-            'url',
+            'id',
             'person_1',
             'person_2',
             'mariage_date',
             'divorce_date'
         ]
 
+    def to_internal_value(self, data):
+        if(data['mariage_date'] == ''):
+            data['mariage_date'] = None
+        if(data['divorce_date'] == ''):
+            data['divorce_date'] = None
+        return super().to_internal_value(data)
 
-class BasicPersonSerializer(serializers.HyperlinkedModelSerializer):
+
+class BasicPersonSerializer(serializers.ModelSerializer):
     mariages = MariageSerializer(many=True)
 
     class Meta:
         model = Person
         fields = [
-            'url',
+            'id',
             'name',
             'surname',
+            'x',
+            'y',
             'sex',
             'mariages'
         ]
 
 
-class EventSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = [
-            'url',
+            'id',
             'person',
             'title',
             'description',
@@ -60,45 +69,52 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
             'icon'
         ]
 
+    def to_internal_value(self, data):
+        if(data['date'] == ''):
+            data['date'] = None
+        return super().to_internal_value(data)
 
-class FamilyTreeSerializer(serializers.HyperlinkedModelSerializer):
+
+class FamilyTreeSerializer(serializers.ModelSerializer):
     persons = BasicPersonSerializer(many=True)
 
     class Meta:
         model = FamilyTree
         fields = [
-            'url',
+            'id',
             'name',
             'description',
             'persons',
         ]
 
 
-class MediaSerializer(serializers.HyperlinkedModelSerializer):
+class MediaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Media
         fields = [
-            'url',
+            'id',
             'person',
             'name',
             'file'
         ]
 
 
-class PersonSerializer(serializers.HyperlinkedModelSerializer):
-    medias = MediaSerializer(many=True)
-    events = EventSerializer(many=True)
-    mariages = MariageSerializer(many=True)
+class PersonSerializer(serializers.ModelSerializer):
+    medias = MediaSerializer(many=True, read_only=True)
+    events = EventSerializer(many=True, read_only=True)
+    mariages = MariageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Person
         fields = [
-            'url',
+            'id',
             'family_tree',
             'father',
             'mother',
             'name',
             'surname',
+            'x',
+            'y',
             'birth_date',
             'nationality',
             'sex',
@@ -110,15 +126,12 @@ class PersonSerializer(serializers.HyperlinkedModelSerializer):
             'mariages'
         ]
 
-    def create(self, validated_data):
-        medias_data = validated_data.pop('medias')
-        events_data = validated_data.pop('events')
-        person = Person.objects.create(**validated_data)
-        for media_data in medias_data:
-            Media.objects.create(person=person, **media_data)
-        for event_data in events_data:
-            Event.objects.create(person=person, **event_data)
-        return person
+    def to_internal_value(self, data):
+        if(data['birth_date'] == ''):
+            data['birth_date'] = None
+        if(data['death_date'] == ''):
+            data['death_date'] = None
+        return super().to_internal_value(data)
 
 
 class UserSerializer(serializers.ModelSerializer):

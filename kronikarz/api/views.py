@@ -165,7 +165,7 @@ class LogoutView(views.APIView):
 class RegisterView(views.APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description="Register new User",
+    @swagger_auto_schema(operation_description='Register new User',
                          responses={201: 'Successfully registered user',
                                     400: 'Something went wrong with registration'},
                          request_body=UserSerializer)
@@ -180,14 +180,34 @@ class RegisterView(views.APIView):
                 status=status.HTTP_201_CREATED)
 
 
+class IsAuthenticatedView(views.APIView):
+    permission_classes = [AllowAny]
+
+    @swagger_auto_schema(operation_description='Check if User is logged in',
+                         responses={201: r'{"user":  "", "detail": "User is not authenticated:"}',
+                                    400: r'{"user":  id,   "detail": "User is authenticated:"}'})
+    def get(self, request, format=None):
+        user = request.user
+        print(user)
+        print(user.is_authenticated)
+        if user.is_authenticated:
+            return Response({'user':  user.id,
+                             'detail': 'User is authenticated:'},
+                            status=status.HTTP_200_OK)
+        else:
+            return Response({'user':  '',
+                             'detail': 'User is not authenticated:'},
+                            status=status.HTTP_401_UNAUTHORIZED)
+
+
 # Generate CSRF TOKEN
 
 
-@method_decorator(csrf.ensure_csrf_cookie, name='dispatch')
+@ method_decorator(csrf.ensure_csrf_cookie, name='dispatch')
 class CSRFTokenView(views.APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description='Endpoint to return CSRF token in cookie')
+    @ swagger_auto_schema(operation_description='Endpoint to return CSRF token in cookie')
     def get(self, request, format=None):
         return Response({'detail': 'Success, SCRF cookie set'},
                         status=status.HTTP_200_OK)

@@ -25,7 +25,7 @@ from rest_framework import (
 from .api.views import (
     CSRFTokenView,
     EventViewSet,
-    FamilyTreeViewSet,
+    FamilyTreeViewSet, IsAuthenticatedView,
     LoginView,
     LogoutView,
     MariageViewSet,
@@ -64,7 +64,7 @@ urlpatterns = [
     path(r'auth/register/', RegisterView.as_view()),
     path(r'auth/login/', LoginView.as_view()),
     path(r'auth/logout/', LogoutView.as_view()),
-
+    path(r'auth/authentication/', IsAuthenticatedView.as_view()),
     path(r'auth/csrf-cookie/', CSRFTokenView.as_view()),
 
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',

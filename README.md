@@ -1,15 +1,14 @@
-# Kronikarz
+# Kronikarz (Backend)
+Multimedialne drzewa genealogiczne
+## Instalacja
+1. Stwórz i uruchom kontener
+	```sh
+	docker-compose up
+	```
+2. Aplikacja jest dostępna pod adresem: http://127.0.0.1:8000/
+## Dokumentacja
+Dokumentacja jest dostępna pod następujacymi adresami:
+- dokumentacja redoc : http://127.0.0.1:8000/redoc/
+- dokumentacja swagger : http://127.0.0.1:8000/swagger/
 
-Multimedialne drzewa genealogiczne:
-* wizualizacja
-* przeciąganie elementów
-* dołączanie załączników multimedialnych
-* obsługa różnych relacji między osobami
-* ramy czasowe relacji
-* informacje biograficzne
-	*  zawód
-	*  stanowisko
-	*  osiągnięcia
-	*  nagrody
-* eksport do HTML i PDF, zapis i odczyt danych z pliku JSON
-* wow!: obsługa wielu użytkowników i wielu drzew za pomocą bazy danych
+Konieczne jest uruchomienie aplikacji lokalnie

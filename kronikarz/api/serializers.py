@@ -43,6 +43,7 @@ class MariageSerializer(serializers.ModelSerializer):
 
 class BasicPersonSerializer(serializers.ModelSerializer):
     mariages = MariageSerializer(many=True)
+    profile_pic = serializers.SerializerMethodField()
 
     class Meta:
         model = Person
@@ -53,8 +54,19 @@ class BasicPersonSerializer(serializers.ModelSerializer):
             'x',
             'y',
             'sex',
-            'mariages'
+            'mariages',
+            'profile_pic'
         ]
+
+    def get_profile_pic(self, obj):
+        media = Media.objects.filter(
+            person__pk=obj.pk, is_profile_pic=True).first()
+        if media is not None:
+            file_url = self.context['request'].build_absolute_uri(
+                media.file.url)
+            return file_url
+        else:
+            return ''
 
 
 class EventSerializer(serializers.ModelSerializer):
@@ -95,7 +107,8 @@ class MediaSerializer(serializers.ModelSerializer):
             'id',
             'person',
             'name',
-            'file'
+            'file',
+            'is_profile_pic'
         ]
 
 

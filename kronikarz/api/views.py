@@ -1,7 +1,5 @@
-from drf_yasg.utils import (
-    swagger_auto_schema,
-    swagger_serializer_method
-)
+from drf_yasg.utils import swagger_auto_schema
+from django_filters import rest_framework as filters
 
 from django.views.decorators import csrf
 from django.utils.decorators import method_decorator
@@ -50,6 +48,8 @@ User = get_user_model()
 class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventSerializer
     permission_classes = [IsAuthenticated, IsEventOwner]
+    filter_backends = [filters.DjangoFilterBackend, ]
+    filterset_fields = ['person__id', ]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -59,9 +59,9 @@ class EventViewSet(viewsets.ModelViewSet):
         return Event.objects.filter(person__family_tree__user=current_user)
 
 
-@method_decorator(swagger_serializer_method(FamilyTreeSerializer),
+@method_decorator(swagger_auto_schema(responses={200: FamilyTreeSerializer}),
                   name='retrieve')
-@method_decorator(swagger_serializer_method(BasicFamilyTreeSerializer),
+@method_decorator(swagger_auto_schema(responses={200: BasicFamilyTreeSerializer}),
                   name='list')
 class FamilyTreeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsFamilyTreeOwner]
@@ -86,6 +86,8 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
 class MariageViewSet(viewsets.ModelViewSet):
     serializer_class = MariageSerializer
     permission_classes = [IsAuthenticated, IsMariageOwner]
+    filter_backends = [filters.DjangoFilterBackend, ]
+    filterset_fields = ['person_1__family_tree__id', ]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -98,6 +100,8 @@ class MariageViewSet(viewsets.ModelViewSet):
 class MediaViewSet(viewsets.ModelViewSet):
     serializer_class = MediaSerializer
     permission_classes = [IsAuthenticated, IsMediaOwner]
+    filter_backends = [filters.DjangoFilterBackend, ]
+    filterset_fields = ['person__id', ]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -110,6 +114,8 @@ class MediaViewSet(viewsets.ModelViewSet):
 class PersonViewSet(viewsets.ModelViewSet):
     serializer_class = PersonSerializer
     permission_classes = [IsAuthenticated, IsPersonOwner]
+    filter_backends = [filters.DjangoFilterBackend, ]
+    filterset_fields = ['family_tree__id', ]
 
     def get_queryset(self):
         if getattr(self, 'swagger_fake_view', False):
@@ -121,14 +127,14 @@ class PersonViewSet(viewsets.ModelViewSet):
 
 # Register and login
 
-@method_decorator(csrf.csrf_protect, name='dispatch')
+@ method_decorator(csrf.csrf_protect, name='dispatch')
 class LoginView(views.APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description="User log in",
-                         responses={200: 'Successfully log in user',
-                                    400: 'Something went wrong with log in'},
-                         request_body=UserSerializer)
+    @ swagger_auto_schema(operation_description="User log in",
+                          responses={200: 'Successfully log in user',
+                                     400: 'Something went wrong with log in'},
+                          request_body=UserSerializer)
     def post(self, request, format=None):
         username = request.data['username']
         password = request.data['password']
@@ -149,26 +155,27 @@ class LoginView(views.APIView):
                 status=status.HTTP_400_BAD_REQUEST)
 
 
-@method_decorator(csrf.requires_csrf_token, name='dispatch')
+@ method_decorator(csrf.requires_csrf_token, name='dispatch')
 class LogoutView(views.APIView):
     permission_classes = [IsAuthenticated]
 
-    @swagger_auto_schema(operation_description="Log out current user",
-                         responses={200: 'Successfully log out user'})
+    @ swagger_auto_schema(operation_description="Log out current user",
+                          responses={200: 'Successfully log out user',
+                                     403: 'Authentication credentials were not provided.'})
     def post(self, request, format=None):
         logout(request)
         return Response({'detail': 'Successfully log out'},
                         status=status.HTTP_200_OK)
 
 
-@method_decorator(csrf.requires_csrf_token, name='dispatch')
+@ method_decorator(csrf.requires_csrf_token, name='dispatch')
 class RegisterView(views.APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description='Register new User',
-                         responses={201: 'Successfully registered user',
-                                    400: 'Something went wrong with registration'},
-                         request_body=UserSerializer)
+    @ swagger_auto_schema(operation_description='Register new User',
+                          responses={201: 'Successfully registered user',
+                                     400: 'Something went wrong with registration'},
+                          request_body=UserSerializer)
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -183,9 +190,9 @@ class RegisterView(views.APIView):
 class IsAuthenticatedView(views.APIView):
     permission_classes = [AllowAny]
 
-    @swagger_auto_schema(operation_description='Check if User is logged in',
-                         responses={201: r'{"user":  "", "detail": "User is not authenticated:"}',
-                                    400: r'{"user":  id,   "detail": "User is authenticated:"}'})
+    @ swagger_auto_schema(operation_description='Check if User is logged in',
+                          responses={201: r'{"user":  "", "detail": "User is not authenticated:"}',
+                                     400: r'{"user":  id,   "detail": "User is authenticated:"}'})
     def get(self, request, format=None):
         user = request.user
         print(user)

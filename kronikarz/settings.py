@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'corsheaders',
-    'kronikarz.api.apps.ApiConfig'
+    'kronikarz.api.apps.ApiConfig',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

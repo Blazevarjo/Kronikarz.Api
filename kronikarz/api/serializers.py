@@ -8,6 +8,7 @@ from .models import (
 )
 
 from django.contrib.auth import get_user_model
+from drf_yasg.utils import swagger_serializer_method
 
 User = get_user_model()
 
@@ -58,6 +59,7 @@ class BasicPersonSerializer(serializers.ModelSerializer):
             'profile_pic'
         ]
 
+    @swagger_serializer_method(serializers.ImageField)
     def get_profile_pic(self, obj):
         media = Media.objects.filter(
             person__pk=obj.pk, is_profile_pic=True).first()

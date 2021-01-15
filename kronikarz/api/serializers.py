@@ -52,11 +52,14 @@ class BasicPersonSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'surname',
+            'father',
+            'mother',
             'x',
             'y',
             'sex',
             'mariages',
-            'profile_pic'
+            'profile_pic',
+
         ]
 
     @swagger_serializer_method(serializers.ImageField)

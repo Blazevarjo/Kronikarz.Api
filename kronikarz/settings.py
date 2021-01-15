@@ -36,14 +36,18 @@ AUTH_USER_MODEL = 'api.User'
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5500',
-    "http://127.0.0.1:5500",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     'http://localhost:5500',
+#     "http://127.0.0.1:5500",
+# ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
 CSRF_TRUSTED_ORIGINS = [
     'localhost:5500',
 ]
 
+CSRF_FAILURE_VIEW = 'kronikarz.api.views.csrf_failure'
 
 # Application definition
 
@@ -97,6 +101,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
+
 }
 
 SWAGGER_SETTINGS = {

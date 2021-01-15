@@ -55,9 +55,9 @@ class Person(models.Model):
     family_tree = models.ForeignKey(
         'api.FamilyTree', related_name='persons', on_delete=models.CASCADE)
     father = models.ForeignKey(
-        'api.Person',  null=True, on_delete=models.SET_NULL, related_name='person_father')
+        'api.Person', blank=True, null=True, on_delete=models.SET_NULL, related_name='person_father')
     mother = models.ForeignKey(
-        'api.Person', null=True, on_delete=models.SET_NULL, related_name='person_mother')
+        'api.Person', blank=True, null=True, on_delete=models.SET_NULL, related_name='person_mother')
     name = models.CharField(max_length=50, blank=True)
     surname = models.CharField(max_length=50, blank=True)
     x = models.FloatField()

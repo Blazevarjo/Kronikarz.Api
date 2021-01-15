@@ -35,9 +35,9 @@ class MariageSerializer(serializers.ModelSerializer):
         ]
 
     def to_internal_value(self, data):
-        if(data['mariage_date'] == ''):
+        if('mariage_date' in data and data['mariage_date'] == ''):
             data['mariage_date'] = None
-        if(data['divorce_date'] == ''):
+        if('divorce_date' in data and data['divorce_date'] == ''):
             data['divorce_date'] = None
         return super().to_internal_value(data)
 
@@ -87,7 +87,7 @@ class EventSerializer(serializers.ModelSerializer):
         ]
 
     def to_internal_value(self, data):
-        if(data['date'] == ''):
+        if('date' in data and data['date'] == ''):
             data['date'] = None
         return super().to_internal_value(data)
 
@@ -145,9 +145,9 @@ class PersonSerializer(serializers.ModelSerializer):
         ]
 
     def to_internal_value(self, data):
-        if(data['birth_date'] == ''):
+        if('birth_date' in data and data['birth_date'] == ''):
             data['birth_date'] = None
-        if(data['death_date'] == ''):
+        if('death_date' in data and data['death_date'] == ''):
             data['death_date'] = None
         return super().to_internal_value(data)
 

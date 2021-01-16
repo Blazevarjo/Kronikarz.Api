@@ -98,7 +98,7 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
 
 
 class MariageFilter(filters.FilterSet):
-    person = filters.NumberFilter(
+    family_tree = filters.NumberFilter(
         field_name="person_1", lookup_expr='family_tree__id')
 
 

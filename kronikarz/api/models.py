@@ -12,7 +12,7 @@ class Event(models.Model):
 
     person = models.ForeignKey(
         'api.Person', related_name='events', on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True)
     description = models.CharField(max_length=2000, blank=True)
     date = models.DateField(blank=True, null=True)
     icon = models.CharField(

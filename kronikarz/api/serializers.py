@@ -8,6 +8,7 @@ from .models import (
 )
 
 from django.contrib.auth import get_user_model
+from django.db.models import Q
 from drf_yasg.utils import swagger_serializer_method
 
 User = get_user_model()
@@ -120,7 +121,7 @@ class MediaSerializer(serializers.ModelSerializer):
 class PersonSerializer(serializers.ModelSerializer):
     medias = MediaSerializer(many=True, read_only=True)
     events = EventSerializer(many=True, read_only=True)
-    mariages = MariageSerializer(many=True, read_only=True)
+    mariages = serializers.SerializerMethodField()
 
     class Meta:
         model = Person
@@ -150,6 +151,13 @@ class PersonSerializer(serializers.ModelSerializer):
         if('death_date' in data and data['death_date'] == ''):
             data['death_date'] = None
         return super().to_internal_value(data)
+
+    @swagger_serializer_method(MariageSerializer(many=True))
+    def get_mariages(self, obj):
+        mariages = Mariage.objects.filter(
+            Q(person_1=obj) | Q(person_2=obj))
+        serializer = MariageSerializer(instance=mariages, many=True)
+        return serializer.data
 
 
 class UserSerializer(serializers.ModelSerializer):

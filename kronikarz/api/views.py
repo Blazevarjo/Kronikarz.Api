@@ -4,7 +4,7 @@ from django_filters import rest_framework as filters
 from django.views.decorators import csrf
 from django.utils.decorators import method_decorator
 
-from rest_framework.decorators import renderer_classes, api_view
+from rest_framework.decorators import action, renderer_classes, api_view
 from rest_framework.renderers import JSONRenderer
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -24,12 +24,14 @@ from .models import (
 )
 from .serializers import (
     BasicPersonSerializer,
+    DataFamilyTreeSerializer,
     EventSerializer,
     BasicFamilyTreeSerializer,
     FamilyTreeSerializer,
     MariageSerializer,
     MediaSerializer,
-    PersonSerializer, UserSerializer,
+    PersonSerializer,
+    UserSerializer,
 )
 
 from .permissions import (
@@ -95,6 +97,12 @@ class FamilyTreeViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def all_data(self, request, pk=None):
+        family_tree = FamilyTree.objects.filter(pk=pk).get()
+        serializer = DataFamilyTreeSerializer(family_tree)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class MariageFilter(filters.FilterSet):

@@ -177,3 +177,11 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         return user
+
+
+class DataFamilyTreeSerializer(serializers.ModelSerializer):
+    persons = PersonSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = FamilyTree
+        fields = '__all__'
